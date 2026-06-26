@@ -1,0 +1,37 @@
+name: Build Gamemode
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Pawn Compiler
+        run: |
+          git clone --recursive https://github.com/pawn-lang/compiler.git
+          cd compiler
+          mkdir build
+          cd build
+          cmake ..
+          make
+
+      - name: Compile Gamemode
+        run: |
+          ./compiler/build/pawncc \
+          gamemodes/gamemode.pwn \
+          -iinclude \
+          -ilegacy \
+          -ogamemodes/gamemode.amx
+
+      - name: Upload AMX
+        uses: actions/upload-artifact@v4
+        with:
+          name: gamemode
+          path: gamemodes/gamemode.amx
