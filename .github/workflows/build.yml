@@ -1,4 +1,4 @@
-name: build
+name: Build SA-MP Gamemode
 
 on:
   workflow_dispatch:
@@ -11,20 +11,24 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-      - name: Download Pawn Compiler
+      - name: Clone Pawn Compiler
         run: |
-          wget https://github.com/pawn-lang/compiler/releases/latest/download/pawnc-linux-x86_64.tar.gz
-          tar -xzf pawnc-linux-x86_64.tar.gz
+          git clone --depth=1 https://github.com/pawn-lang/compiler.git compiler
+          cd compiler
+          mkdir build
+          cd build
+          cmake ..
+          make
 
       - name: Compile Gamemode
         run: |
-          ./pawncc \
-          gamemodes/gamemode.pwn \
-          -iinclude \
-          -ilegacy \
-          -ogamemodes/gamemode.amx
+          ./compiler/build/pawncc \
+            gamemodes/gamemode.pwn \
+            -ilegacy \
+            -ogamemodes/gamemode.amx
 
       - name: Upload AMX
         uses: actions/upload-artifact@v4
