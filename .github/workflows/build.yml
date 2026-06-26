@@ -14,14 +14,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Build using Docker
-        uses: addnab/docker-run-action@v3
-        with:
-          image: ghcr.io/openmultiplayer/compiler:latest
-          options: -v ${{ github.workspace }}:/workspace
-          run: |
-            cd /workspace
-            pawncc gamemodes/gamemode.pwn -i./legacy -i./gamemodes -ogamemode.amx
+      - name: Install Pawn Compiler
+        run: |
+          sudo apt update
+          sudo apt install -y unzip wget
+          wget https://github.com/compuphase/pawn/releases/download/v3.10.10/pawnc_linux_x86.zip
+          unzip pawnc_linux_x86.zip
+          chmod +x pawncc
+
+      - name: Compile Gamemode
+        run: |
+          ./pawncc gamemodes/gamemode.pwn -ilegacy
 
       - name: Upload AMX
         uses: actions/upload-artifact@v4
