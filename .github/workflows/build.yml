@@ -1,4 +1,4 @@
-name: Build Gamemode
+name: build
 
 on:
   workflow_dispatch:
@@ -13,18 +13,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Pawn Compiler
+      - name: Download Pawn Compiler
         run: |
-          git clone --recursive https://github.com/pawn-lang/compiler.git
-          cd compiler
-          mkdir build
-          cd build
-          cmake ..
-          make
+          wget https://github.com/pawn-lang/compiler/releases/latest/download/pawnc-linux-x86_64.tar.gz
+          tar -xzf pawnc-linux-x86_64.tar.gz
 
       - name: Compile Gamemode
         run: |
-          ./compiler/build/pawncc \
+          ./pawncc \
           gamemodes/gamemode.pwn \
           -iinclude \
           -ilegacy \
