@@ -14,35 +14,19 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y git cmake make g++ build-essential
+          sudo apt-get install -y unzip wget
 
-      - name: Clone Pawn Compiler
+      - name: Download Pawn Compiler
         run: |
-          git clone --depth=1 https://github.com/pawn-lang/compiler pawn-compiler
-
-      - name: Build Pawn Compiler
-        run: |
-          cd pawn-compiler/source/compiler
-          mkdir build
-          cd build
-          cmake ..
-          make -j2
-
-      - name: Find pawncc
-        run: |
-          find $GITHUB_WORKSPACE -type f -name pawncc
+          wget https://github.com/pawn-lang/compiler/releases/latest/download/pawnc-linux-x86_64.zip -O pawnc.zip
+          unzip pawnc.zip -d pawn
+          chmod +x pawn/pawncc
 
       - name: Compile Gamemode
         run: |
-          PAWNCC=$(find $GITHUB_WORKSPACE -type f -name pawncc | head -n1)
-
-          echo "PawnCC: $PAWNCC"
-
-          chmod +x "$PAWNCC"
-
           cd gamemodes
 
-          "$PAWNCC" gamemode.pwn \
+          ../pawn/pawncc gamemode.pwn \
             -i./ \
             -i./config \
             -i./config/data \
@@ -51,12 +35,9 @@ jobs:
             -i../pawno/include \
             -ogamemode.amx
 
-      - name: Verify Output
-        run: |
-          ls -lah gamemodes
-
       - name: Upload AMX
         uses: actions/upload-artifact@v4
         with:
           name: gamemode-amx
           path: gamemodes/gamemode.amx
+          
