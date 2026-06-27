@@ -13,31 +13,36 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y unzip wget
+          sudo apt update
+          sudo apt install -y git cmake build-essential unzip wget
 
-      - name: Download Pawn Compiler
+      - name: Clone Pawn Compiler
         run: |
-          wget https://github.com/pawn-lang/compiler/releases/latest/download/pawnc-linux-x86_64.zip -O pawnc.zip
-          unzip pawnc.zip -d pawn
-          chmod +x pawn/pawncc
+          git clone --depth=1 https://github.com/pawn-lang/compiler.git
+          cd compiler/source/compiler
+          mkdir build
+          cd build
+          cmake ..
+          make
+
+      - name: Find pawncc
+        run: |
+          find . -name pawncc
 
       - name: Compile Gamemode
         run: |
-          cd gamemodes
+          PAWNCC=$(find . -type f -name pawncc | head -n1)
+          chmod +x "$PAWNCC"
 
-          ../pawn/pawncc gamemode.pwn \
-            -i./ \
-            -i./config \
-            -i./config/data \
-            -i./config/gui \
-            -i./config/utils \
-            -i../pawno/include \
+          "$PAWNCC" \
+            gamemodes/gamemode.pwn \
+            -igamemodes \
+            -igamemodes/config \
             -ogamemode.amx
 
       - name: Upload AMX
         uses: actions/upload-artifact@v4
         with:
-          name: gamemode-amx
-          path: gamemodes/gamemode.amx
+          name: gamemode
+          path: gamemode.amx
           
