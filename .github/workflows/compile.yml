@@ -8,13 +8,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Install
+      - name: Install Dependencies
         run: |
-          sudo apt update
-          sudo apt install -y git cmake make g++ build-essential
+          sudo apt-get update
+          sudo apt-get install -y git cmake make g++ build-essential
 
       - name: Clone Pawn Compiler
         run: |
@@ -35,8 +35,25 @@ jobs:
       - name: Compile Gamemode
         run: |
           PAWNCC=$(find $GITHUB_WORKSPACE -type f -name pawncc | head -n1)
+
+          echo "PawnCC: $PAWNCC"
+
           chmod +x "$PAWNCC"
-          "$PAWNCC" gamemodes/gamemode.pwn -ogamemodes/gamemode.amx
+
+          cd gamemodes
+
+          "$PAWNCC" gamemode.pwn \
+            -i./ \
+            -i./config \
+            -i./config/data \
+            -i./config/gui \
+            -i./config/utils \
+            -i../pawno/include \
+            -ogamemode.amx
+
+      - name: Verify Output
+        run: |
+          ls -lah gamemodes
 
       - name: Upload AMX
         uses: actions/upload-artifact@v4
