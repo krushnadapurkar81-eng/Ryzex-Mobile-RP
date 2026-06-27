@@ -2,39 +2,35 @@ name: Compile SP-RP
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
 
 jobs:
   compile:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Install Tools
+      - name: Install Dependencies
         run: |
           sudo apt update
-          sudo apt install -y git cmake make gcc g++
+          sudo apt install -y git cmake make g++ build-essential
 
       - name: Clone Pawn Compiler
         run: |
-          git clone --depth=1 https://github.com/pawn-lang/compiler.git pawn-compiler
+          git clone --depth=1 https://github.com/pawn-lang/compiler pawn-compiler
 
-      - name: Inspect Source
+      - name: Build Pawn Compiler
         run: |
-          cd pawn-compiler
-          echo "=== ROOT ==="
-          pwd
-          ls -la
-          echo ""
-          echo "=== SOURCE ==="
-          ls -la source
-          echo ""
-          echo "=== FIND CMakeLists ==="
-          find . -name CMakeLists.txt
+          cd pawn-compiler/source/compiler
+          mkdir build
+          cd build
+          cmake ..
+          make -j2
+
+      - name: Find pawncc
+        run: |
+          find ../../.. -name pawncc
 
       - name: Finish
-        run: |
-          echo "Inspection complete."
+        run: echo "Done"
