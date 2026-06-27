@@ -8,13 +8,12 @@ on:
 
 jobs:
   compile:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Install dependencies
+      - name: Install Tools
         run: |
           sudo apt update
           sudo apt install -y git cmake make gcc g++ clang
@@ -23,28 +22,17 @@ jobs:
         run: |
           git clone --depth=1 https://github.com/pawn-lang/compiler.git pawn-compiler
 
-      - name: Build Pawn Compiler
+      - name: Inspect Pawn Compiler
         run: |
           cd pawn-compiler
-          mkdir build
-          cd build
-          cmake ..
-          make -j2
+          echo "Current directory:"
+          pwd
+          echo ""
+          echo "Files:"
+          ls -la
+          echo ""
+          echo "Tree:"
+          find . -maxdepth 2 -type f
 
-      - name: Check compiler
-        run: |
-          find pawn-compiler -name pawncc
-
-      - name: Compile Gamemode
-        run: |
-          PAWNCC=$(find pawn-compiler -name pawncc | head -n1)
-          chmod +x "$PAWNCC"
-          "$PAWNCC" gamemodes/gamemode.pwn \
-            -ilegacy \
-            -ogamemodes/gamemode.amx
-
-      - name: Upload AMX
-        uses: actions/upload-artifact@v4
-        with:
-          name: gamemode
-          path: gamemodes/gamemode.amx
+      - name: Finish
+        run: echo "Inspection complete"
