@@ -1,48 +1,39 @@
-name: Compile SP-RP
+name: Build Ryzex Mobile RP
 
 on:
   workflow_dispatch:
+  push:
+    branches: [ main ]
 
 jobs:
-  compile:
-    runs-on: ubuntu-latest
+  build:
+    runs-on: ubuntu-22.04
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Install Dependencies
+      - name: Install tools
         run: |
           sudo apt update
-          sudo apt install -y git cmake build-essential unzip wget
+          sudo apt install -y curl unzip git
 
-      - name: Clone Pawn Compiler
+      - name: Install sampctl
         run: |
-          git clone --depth=1 https://github.com/pawn-lang/compiler.git
-          cd compiler/source/compiler
-          mkdir build
-          cd build
-          cmake ..
-          make
+          curl -L https://github.com/Southclaws/sampctl/releases/latest/download/sampctl-linux-amd64.tar.gz \
+            | tar -xz
+          sudo mv sampctl /usr/local/bin/
+          sampctl version
 
-      - name: Find pawncc
+      - name: Install dependencies
         run: |
-          find . -name pawncc
+          sampctl ensure
 
-      - name: Compile Gamemode
+      - name: Build gamemode
         run: |
-          PAWNCC=$(find . -type f -name pawncc | head -n1)
-          chmod +x "$PAWNCC"
-
-          "$PAWNCC" \
-            gamemodes/gamemode.pwn \
-            -igamemodes \
-            -igamemodes/config \
-            -ogamemode.amx
+          sampctl package build
 
       - name: Upload AMX
         uses: actions/upload-artifact@v4
         with:
           name: gamemode
-          path: gamemode.amx
-          
+          path: gamemodes/*.amx
