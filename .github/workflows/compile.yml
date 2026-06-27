@@ -5,16 +5,16 @@ on:
 
 jobs:
   compile:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install
+      - name: Install Dependencies
         run: |
           sudo apt update
-          sudo apt install -y git cmake make gcc g++
+          sudo apt install -y git cmake make g++ build-essential
 
       - name: Clone Pawn Compiler
         run: |
@@ -26,17 +26,26 @@ jobs:
           mkdir build
           cd build
           cmake ..
-          make -j1 || true
+          make -j2
 
       - name: Find pawncc
         run: |
-          find $GITHUB_WORKSPACE -name pawncc
+          find $GITHUB_WORKSPACE -type f -name pawncc
 
       - name: Compile Gamemode
         run: |
           PAWNCC=$(find $GITHUB_WORKSPACE -type f -name pawncc | head -n1)
           chmod +x "$PAWNCC"
-          "$PAWNCC" gamemodes/gamemode.pwn -ogamemodes/gamemode.amx
+
+          cd gamemodes
+
+          "$PAWNCC" gamemode.pwn \
+            -i. \
+            -iconfig \
+            -iconfig/data \
+            -iconfig/gui \
+            -iconfig/utils \
+            -o gamemode.amx
 
       - name: Upload AMX
         uses: actions/upload-artifact@v4
