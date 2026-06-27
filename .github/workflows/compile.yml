@@ -8,7 +8,8 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Install
         run: |
@@ -30,4 +31,15 @@ jobs:
       - name: Find pawncc
         run: |
           find $GITHUB_WORKSPACE -name pawncc
-          find $GITHUB_WORKSPACE -name pawnc
+
+      - name: Compile Gamemode
+        run: |
+          PAWNCC=$(find $GITHUB_WORKSPACE -type f -name pawncc | head -n1)
+          chmod +x "$PAWNCC"
+          "$PAWNCC" gamemodes/gamemode.pwn -ogamemodes/gamemode.amx
+
+      - name: Upload AMX
+        uses: actions/upload-artifact@v4
+        with:
+          name: gamemode-amx
+          path: gamemodes/gamemode.amx
