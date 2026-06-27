@@ -16,23 +16,25 @@ jobs:
       - name: Install Tools
         run: |
           sudo apt update
-          sudo apt install -y git cmake make gcc g++ clang
+          sudo apt install -y git cmake make gcc g++
 
       - name: Clone Pawn Compiler
         run: |
           git clone --depth=1 https://github.com/pawn-lang/compiler.git pawn-compiler
 
-      - name: Inspect Pawn Compiler
+      - name: Inspect Source
         run: |
           cd pawn-compiler
-          echo "Current directory:"
+          echo "=== ROOT ==="
           pwd
-          echo ""
-          echo "Files:"
           ls -la
           echo ""
-          echo "Tree:"
-          find . -maxdepth 2 -type f
+          echo "=== SOURCE ==="
+          ls -la source
+          echo ""
+          echo "=== FIND CMakeLists ==="
+          find . -name CMakeLists.txt
 
       - name: Finish
-        run: echo "Inspection complete"
+        run: |
+          echo "Inspection complete."
