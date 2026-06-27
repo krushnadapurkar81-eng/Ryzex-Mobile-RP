@@ -1,0 +1,21 @@
+name: Compile SP-RP
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  compile:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Show project structure
+        run: |
+          pwd
+          ls -la
+          find . -maxdepth 2 -type f | sort
