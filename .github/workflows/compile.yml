@@ -1,0 +1,24 @@
+name: Build Ryzex Mobile RP
+
+on:
+  workflow_dispatch:
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Show project structure
+        run: |
+          echo "=== ROOT ==="
+          ls -la
+          echo ""
+          echo "=== GAMEMODES ==="
+          find gamemodes -maxdepth 2 -type f
+          echo ""
+          echo "=== PAWN.JSON ==="
+          cat pawn.json
+          
