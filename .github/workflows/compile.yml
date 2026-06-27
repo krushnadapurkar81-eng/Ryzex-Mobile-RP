@@ -11,7 +11,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install Dependencies
+      - name: Install
         run: |
           sudo apt update
           sudo apt install -y git cmake make g++ build-essential
@@ -36,16 +36,7 @@ jobs:
         run: |
           PAWNCC=$(find $GITHUB_WORKSPACE -type f -name pawncc | head -n1)
           chmod +x "$PAWNCC"
-
-          cd gamemodes
-
-          "$PAWNCC" gamemode.pwn \
-            -i. \
-            -iconfig \
-            -iconfig/data \
-            -iconfig/gui \
-            -iconfig/utils \
-            -o gamemode.amx
+          "$PAWNCC" gamemodes/gamemode.pwn -ogamemodes/gamemode.amx
 
       - name: Upload AMX
         uses: actions/upload-artifact@v4
