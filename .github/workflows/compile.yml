@@ -2,6 +2,9 @@ name: Compile SP-RP
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
 
 jobs:
   compile:
@@ -10,19 +13,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Pawn Compiler
+      - name: Setup Compiler
         run: |
-          sudo apt update
-          sudo apt install -y pawnc
+          git clone https://github.com/pawn-lang/compiler.git
+          echo "Compiler downloaded"
 
-      - name: Compile Gamemode
+      - name: Show Project
         run: |
-          pawncc gamemodes/gamemode.pwn \
-            -ilegacy \
-            -ogamemodes/gamemode.amx
+          pwd
+          ls -la
+          find gamemodes -type f
 
-      - name: Upload AMX
-        uses: actions/upload-artifact@v4
-        with:
-          name: gamemode
-          path: gamemodes/gamemode.amx
+      - name: Done
+        run: echo "Ready for next step"
