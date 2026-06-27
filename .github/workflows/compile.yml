@@ -14,19 +14,41 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install -y git cmake make clang
+          sudo apt install -y git build-essential cmake make gcc g++
 
       - name: Clone Pawn compiler
         run: |
           git clone https://github.com/compuphase/pawn.git
 
+      - name: Build compiler
+        run: |
+          cd pawn/source/compiler
+          mkdir build
+          cd build
+          cmake ..
+          make
+
       - name: Find compiler
         run: |
-          echo "Current directory:"
-          pwd
+          echo "Searching pawncc..."
+          find . -type f -name pawncc
           echo ""
-          echo "Repository tree:"
-          ls -R
+          echo "Searching compiler directory..."
+          find . -type d -name compiler
+          echo ""
+          echo "Searching build directory..."
+          find . -type d -name build
 
-      - name: Complete
-        run: echo "Done"
+      - name: Compile gamemode
+        run: |
+          ./pawn/source/compiler/build/pawncc \
+          -i./pawn/include \
+          -i./gamemodes \
+          -o./gamemodes/gamemode.amx \
+          ./gamemodes/gamemode.pwn
+
+      - name: Upload AMX
+        uses: actions/upload-artifact@v4
+        with:
+          name: gamemode
+          path: gamemodes/gamemode.amx
