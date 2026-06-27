@@ -10,10 +10,23 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install packages
+      - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install -y git curl unzip
+          sudo apt install -y git cmake make clang
 
-      - name: Show pawn.json
-        run: cat pawn.json
+      - name: Clone Pawn compiler
+        run: |
+          git clone https://github.com/compuphase/pawn.git
+
+      - name: Build compiler
+        run: |
+          cd pawn/source/compiler
+          mkdir build
+          cd build
+          cmake ..
+          make -j$(nproc)
+
+      - name: Show compiler
+        run: |
+          ls -la pawn/source/compiler/build
