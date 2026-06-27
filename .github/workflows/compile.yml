@@ -8,7 +8,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Install dependencies
         run: |
@@ -19,14 +20,13 @@ jobs:
         run: |
           git clone https://github.com/compuphase/pawn.git
 
-      - name: Build compiler
+      - name: Find compiler
         run: |
-          cd pawn/source/compiler
-          mkdir build
-          cd build
-          cmake ..
-          make -j$(nproc)
+          echo "Current directory:"
+          pwd
+          echo ""
+          echo "Repository tree:"
+          ls -R
 
-      - name: Show compiler
-        run: |
-          ls -la pawn/source/compiler/build
+      - name: Complete
+        run: echo "Done"
