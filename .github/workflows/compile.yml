@@ -20,35 +20,10 @@ jobs:
         run: |
           git clone https://github.com/compuphase/pawn.git
 
-      - name: Build compiler
+      - name: Show Pawn repo
         run: |
-          cd pawn/source/compiler
-          mkdir build
-          cd build
-          cmake ..
-          make
-
-      - name: Find compiler
-        run: |
-          echo "Searching pawncc..."
-          find . -type f -name pawncc
+          echo "===== ROOT ====="
+          ls -la
           echo ""
-          echo "Searching compiler directory..."
-          find . -type d -name compiler
-          echo ""
-          echo "Searching build directory..."
-          find . -type d -name build
-
-      - name: Compile gamemode
-        run: |
-          ./pawn/source/compiler/build/pawncc \
-          -i./pawn/include \
-          -i./gamemodes \
-          -o./gamemodes/gamemode.amx \
-          ./gamemodes/gamemode.pwn
-
-      - name: Upload AMX
-        uses: actions/upload-artifact@v4
-        with:
-          name: gamemode
-          path: gamemodes/gamemode.amx
+          echo "===== PAWN ====="
+          ls -R pawn
